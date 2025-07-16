@@ -1,0 +1,21 @@
+# bonsai environment files
+.vs
+bin
+obj
+Packages
+*.exe
+*.exe.settings
+*.WebView2
+
+# python files
+.venv
+*.pyc
+
+# data files
+*.avi
+*.bin
+*.csv
+*.jsonl
+
+*.mp4
+/src/LocalRules
