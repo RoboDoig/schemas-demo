@@ -95,7 +95,7 @@ namespace RuleSchema
     
         private string _ruleAlias = "undefined";
     
-        private System.Collections.Generic.List<object> _stateDefinitions = new System.Collections.Generic.List<object>();
+        private System.Collections.Generic.List<StateDefinition> _stateDefinitions = new System.Collections.Generic.List<StateDefinition>();
     
         public Rule()
         {
@@ -126,7 +126,7 @@ namespace RuleSchema
     
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         [YamlDotNet.Serialization.YamlMemberAttribute(Alias="stateDefinitions")]
-        public System.Collections.Generic.List<object> StateDefinitions
+        public System.Collections.Generic.List<StateDefinition> StateDefinitions
         {
             get
             {

@@ -1,0 +1,12 @@
+%YAML 1.1
+---
+# yaml-language-server: $schema=rule-schema.json
+
+ruleAlias: DemoRule
+
+stateDefinitions:
+  -   {name: "StateA", transitionsTo: "StateB"}
+  -   {name: "StateB", transitionsTo: "StateC"}
+  -   {name: "StateC", transitionsTo: "StateD"}
+  -   {name: "StateD", transitionsTo: "StateA"} 
+  -   {name: "DefaultState", transitionsTo: "StateA"}

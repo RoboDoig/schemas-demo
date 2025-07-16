@@ -3,12 +3,112 @@
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xmlns:rx="clr-namespace:Bonsai.Reactive;assembly=Bonsai.Core"
                  xmlns:sys="clr-namespace:System;assembly=mscorlib"
-                 xmlns:p1="clr-namespace:;assembly=Extensions"
+                 xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+                 xmlns:p1="clr-namespace:RuleSchema;assembly=Extensions"
+                 xmlns:p2="clr-namespace:;assembly=Extensions"
                  xmlns:scr="clr-namespace:Bonsai.Scripting.Expressions;assembly=Bonsai.Scripting.Expressions"
                  xmlns:wie="clr-namespace:Bonsai.Windows.Input;assembly=Bonsai.Windows.Input"
                  xmlns="https://bonsai-rx.org/2018/workflow">
   <Workflow>
     <Nodes>
+      <Expression xsi:type="GroupWorkflow">
+        <Name>Init</Name>
+        <Workflow>
+          <Nodes>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="StringProperty">
+                <Value>ExperimentStart</Value>
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="rx:BehaviorSubject">
+              <Name>StateMessage</Name>
+            </Expression>
+            <Expression xsi:type="rx:BehaviorSubject" TypeArguments="sys:String">
+              <rx:Name>CurrentState</rx:Name>
+            </Expression>
+            <Expression xsi:type="rx:BehaviorSubject" TypeArguments="scg:IDictionary(sys:String,sys:String)">
+              <rx:Name>TransitionLookup</rx:Name>
+            </Expression>
+            <Expression xsi:type="rx:BehaviorSubject" TypeArguments="p1:Rule">
+              <rx:Name>RuleSettings</rx:Name>
+            </Expression>
+            <Expression xsi:type="ExternalizedMapping">
+              <Property Name="Path" DisplayName="RulePath" />
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="p2:RuleSelector">
+                <p2:Path>demo-rule.rule.yml</p2:Path>
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="MulticastSubject">
+              <Name>RuleSettings</Name>
+            </Expression>
+            <Expression xsi:type="SubscribeSubject">
+              <Name>RuleSettings</Name>
+            </Expression>
+            <Expression xsi:type="rx:SelectMany">
+              <Name>GenerateTransitionDictionary</Name>
+              <Workflow>
+                <Nodes>
+                  <Expression xsi:type="WorkflowInput">
+                    <Name>Source1</Name>
+                  </Expression>
+                  <Expression xsi:type="SubscribeSubject">
+                    <Name>RuleSettings</Name>
+                  </Expression>
+                  <Expression xsi:type="MemberSelector">
+                    <Selector>StateDefinitions</Selector>
+                  </Expression>
+                  <Expression xsi:type="Combinator">
+                    <Combinator xsi:type="rx:Merge" />
+                  </Expression>
+                  <Expression xsi:type="SubscribeSubject">
+                    <Name>RuleSettings</Name>
+                  </Expression>
+                  <Expression xsi:type="MemberSelector">
+                    <Selector>StateDefinitions.Count</Selector>
+                  </Expression>
+                  <Expression xsi:type="PropertyMapping">
+                    <PropertyMappings>
+                      <Property Name="Count" />
+                    </PropertyMappings>
+                  </Expression>
+                  <Expression xsi:type="Combinator">
+                    <Combinator xsi:type="rx:Take">
+                      <rx:Count>5</rx:Count>
+                    </Combinator>
+                  </Expression>
+                  <Expression xsi:type="rx:ToDictionary">
+                    <rx:KeySelector>Name</rx:KeySelector>
+                    <rx:ElementSelector>TransitionsTo</rx:ElementSelector>
+                  </Expression>
+                  <Expression xsi:type="WorkflowOutput" />
+                </Nodes>
+                <Edges>
+                  <Edge From="1" To="2" Label="Source1" />
+                  <Edge From="2" To="3" Label="Source1" />
+                  <Edge From="3" To="7" Label="Source1" />
+                  <Edge From="4" To="5" Label="Source1" />
+                  <Edge From="5" To="6" Label="Source1" />
+                  <Edge From="6" To="7" Label="Source2" />
+                  <Edge From="7" To="8" Label="Source1" />
+                  <Edge From="8" To="9" Label="Source1" />
+                </Edges>
+              </Workflow>
+            </Expression>
+            <Expression xsi:type="MulticastSubject">
+              <Name>TransitionLookup</Name>
+            </Expression>
+          </Nodes>
+          <Edges>
+            <Edge From="0" To="1" Label="Source1" />
+            <Edge From="5" To="6" Label="Source1" />
+            <Edge From="6" To="7" Label="Source1" />
+            <Edge From="8" To="9" Label="Source1" />
+            <Edge From="9" To="10" Label="Source1" />
+          </Edges>
+        </Workflow>
+      </Expression>
       <Expression xsi:type="GroupWorkflow">
         <Name>StateDefinitions</Name>
         <Workflow>
@@ -159,9 +259,9 @@
                     </PropertyMappings>
                   </Expression>
                   <Expression xsi:type="Combinator">
-                    <Combinator xsi:type="p1:TryGetValueOrDefault">
-                      <p1:Key>StateB</p1:Key>
-                      <p1:DefaultString>DefaultState</p1:DefaultString>
+                    <Combinator xsi:type="p2:TryGetValueOrDefault">
+                      <p2:Key>StateB</p2:Key>
+                      <p2:DefaultString>DefaultState</p2:DefaultString>
                     </Combinator>
                   </Expression>
                   <Expression xsi:type="Combinator">
@@ -240,9 +340,9 @@
       </Expression>
     </Nodes>
     <Edges>
-      <Edge From="2" To="3" Label="Source1" />
       <Edge From="3" To="4" Label="Source1" />
       <Edge From="4" To="5" Label="Source1" />
+      <Edge From="5" To="6" Label="Source1" />
     </Edges>
   </Workflow>
 </WorkflowBuilder>

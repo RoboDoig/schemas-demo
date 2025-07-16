@@ -20,7 +20,7 @@
             "type": "string"
         },
         "stateDefinitions": {
-            "additionalProperties": {
+            "items": {
                 "$ref": "#/definitions/stateDefinition"
             },
             "type": "array"
